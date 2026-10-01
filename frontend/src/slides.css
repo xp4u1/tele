@@ -1,0 +1,20 @@
+html {
+  hanging-punctuation: first last;
+}
+
+.previous {
+  opacity: 0.2;
+}
+
+.current {
+  opacity: 1;
+  border-color: cadetblue;
+}
+
+.next {
+  opacity: 0.4;
+}
+
+.future {
+  opacity: 0.2;
+}
