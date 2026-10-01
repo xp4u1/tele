@@ -12,19 +12,14 @@ import (
 )
 
 type Script struct {
-	Slides   []Slide        `json:"slides"`
+	Block    []Block        `json:"blocks"`
 	Metadata map[string]any `json:"metadata"`
 }
 
-type Slide struct {
-	ID     int     `json:"id"`
-	Blocks []Block `json:"blocks"`
-}
-
 type Block struct {
-	// Block id should be unique per Script, not per Slide
-	ID   int    `json:"id"`
-	HTML string `json:"html"`
+	BlockId int    `json:"blockId"`
+	SlideId int    `json:"slideId"`
+	HTML    string `json:"html"`
 }
 
 var p = parser.New(
@@ -43,15 +38,10 @@ func ParseScript(path string) (*Script, error) {
 	document := p.Parse(content)
 	metadata := document.(*ast.Document).Metadata()
 
-	slides := []Slide{}
+	blocks := []Block{}
 
 	slideIndex := 0
 	blockIndex := 0
-
-	currentSlide := Slide{
-		ID:     slideIndex,
-		Blocks: []Block{},
-	}
 
 	for child := range document.Children() {
 		switch child.Kind().String() {
@@ -62,33 +52,27 @@ func ParseScript(path string) (*Script, error) {
 				return nil, err
 			}
 
-			currentSlide.Blocks = append(currentSlide.Blocks, Block{
-				ID:   blockIndex,
-				HTML: buf.String(),
+			blocks = append(blocks, Block{
+				BlockId: blockIndex,
+				SlideId: slideIndex,
+				HTML:    buf.String(),
 			})
 
 			blockIndex++
+
 		case "ThematicBreak":
-			slides = append(slides, currentSlide)
-
 			slideIndex++
-			// do not reset block index
-
-			currentSlide = Slide{
-				ID:     slideIndex,
-				Blocks: []Block{},
-			}
 		}
 	}
 
-	if len(currentSlide.Blocks) > 0 {
-		slides = append(slides, currentSlide)
-	}
-
-	log.Printf("Parsed script with %d slides (%d text blocks)", slideIndex+1, blockIndex+1)
+	log.Printf(
+		"Parsed script with %d slides (%d text blocks)",
+		slideIndex+1,
+		blockIndex,
+	)
 
 	return &Script{
-		Slides:   slides,
+		Block:    blocks,
 		Metadata: metadata,
 	}, nil
 }

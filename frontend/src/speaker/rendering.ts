@@ -10,17 +10,17 @@ const templateBlock = document.querySelector("#template-block")! as HTMLElement;
 export const renderBlocks = (script: Script) => {
   blockContainer.replaceChildren();
 
-  script.slides.forEach((slide) => {
-    slide.blocks.forEach((block) => {
-      const element = templateBlock.cloneNode(true) as HTMLElement;
+  script.blocks.forEach((block) => {
+    const element = templateBlock.cloneNode(true) as HTMLElement;
 
-      element.dataset.slideId = String(slide.id);
-      element.dataset.blockId = String(block.id);
-      element.innerHTML = block.html;
-      element.addEventListener("click", () => presentationState.goTo(block.id));
+    element.dataset.slideId = String(block.slideId);
+    element.dataset.blockId = String(block.blockId);
+    element.innerHTML = block.html;
+    element.addEventListener("click", () =>
+      presentationState.goTo(block.blockId),
+    );
 
-      blockContainer.appendChild(element);
-    });
+    blockContainer.appendChild(element);
   });
 };
 

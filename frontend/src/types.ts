@@ -1,14 +1,10 @@
 export interface Script {
-  slides: Slide[];
+  blocks: Block[];
   metadata: unknown;
 }
 
-export interface Slide {
-  id: number;
-  blocks: Block[];
-}
-
 export interface Block {
-  id: number;
+  blockId: number;
+  slideId: number;
   html: string;
 }
