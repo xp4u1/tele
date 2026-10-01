@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"log"
 	"os"
 
 	meta "github.com/yuin/goldmark-meta/v2"
@@ -83,6 +84,8 @@ func ParseScript(path string) (*Script, error) {
 	if len(currentSlide.Blocks) > 0 {
 		slides = append(slides, currentSlide)
 	}
+
+	log.Printf("Parsed script with %d slides (%d text blocks)", slideIndex+1, blockIndex+1)
 
 	return &Script{
 		Slides:   slides,

@@ -4,6 +4,7 @@ import (
 	"context"
 	"embed"
 	"io/fs"
+	"log"
 	"net/http"
 
 	"github.com/labstack/echo/v5"
@@ -12,12 +13,14 @@ import (
 //go:embed frontend/dist
 var embeddedFrontend embed.FS
 
+const hostAddress = "127.0.0.1:7700"
+
 func StartServer(script Script) {
 	e := echo.New()
 
 	dist, err := fs.Sub(embeddedFrontend, "frontend/dist")
 	if err != nil {
-		e.Logger.Error("failed to load embedded files", "error", err)
+		log.Printf("Failed to load embedded files %v", err)
 	}
 	assetHandler := http.FileServer(http.FS(dist))
 
@@ -26,8 +29,9 @@ func StartServer(script Script) {
 	})
 	e.GET("/*", echo.WrapHandler(assetHandler))
 
-	sc := echo.StartConfig{Address: "127.0.0.1:7700", HideBanner: true}
+	log.Printf("Starting server: http://%s", hostAddress)
+	sc := echo.StartConfig{Address: hostAddress, HideBanner: true, HidePort: true}
 	if err := sc.Start(context.Background(), e); err != nil {
-		e.Logger.Error("failed to start server", "error", err)
+		log.Printf("Failed to start server: %v", err)
 	}
 }
