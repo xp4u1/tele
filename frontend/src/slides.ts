@@ -12,6 +12,8 @@ const addBlock = (block: Block, slideId: number) => {
   element.dataset.blockId = block.id.toString();
   element.innerHTML = block.html;
 
+  element.addEventListener("click", () => focusBlock(block.id));
+
   blockContainer.appendChild(element);
 };
 

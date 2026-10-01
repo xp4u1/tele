@@ -9,6 +9,6 @@ export interface Slide {
 }
 
 export interface Block {
-  id: string;
+  id: number;
   html: string;
 }
