@@ -12,7 +12,7 @@ import (
 //go:embed frontend/dist
 var embeddedFrontend embed.FS
 
-func StartServer() {
+func StartServer(script Script) {
 	e := echo.New()
 
 	dist, err := fs.Sub(embeddedFrontend, "frontend/dist")
@@ -21,6 +21,9 @@ func StartServer() {
 	}
 	assetHandler := http.FileServer(http.FS(dist))
 
+	e.GET("/api/script", func(c *echo.Context) error {
+		return c.JSON(http.StatusOK, script)
+	})
 	e.GET("/*", echo.WrapHandler(assetHandler))
 
 	sc := echo.StartConfig{Address: "127.0.0.1:7700", HideBanner: true}

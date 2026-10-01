@@ -1,5 +1,10 @@
 package main
 
 func main() {
-	StartServer()
+	script, err := ParseScript("script.md")
+	if err != nil {
+		panic(err)
+	}
+
+	StartServer(*script)
 }
