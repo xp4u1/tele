@@ -48,9 +48,6 @@ const focusBlock = (blockId: number) => {
   moveTo(blocks[blockId] as HTMLElement);
 };
 
-let current = 0;
-setInterval(() => focusBlock(current++ % 4), 1000);
-
 window.addEventListener("load", () => {
   fetch("/api/script")
     .then(async (response) => {
@@ -58,4 +55,25 @@ window.addEventListener("load", () => {
       focusBlock(0);
     })
     .catch((error) => console.error(error));
+});
+
+let currentBlock = 0;
+window.addEventListener("keydown", (event) => {
+  const blocks = document.querySelectorAll("[data-block-id]");
+
+  switch (event.key) {
+    case "j":
+    case "n":
+    case " ":
+    case "ArrowDown":
+      currentBlock = Math.min(currentBlock + 1, blocks.length - 1);
+      break;
+    case "k":
+    case "p":
+    case "ArrowUp":
+      currentBlock = Math.max(currentBlock - 1, 0);
+      break;
+  }
+
+  focusBlock(currentBlock);
 });
