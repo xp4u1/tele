@@ -3,11 +3,31 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Speaker View</title>
     <link rel="stylesheet" href="src/main.css" />
+    <link rel="stylesheet" href="src/speaker.css" />
     <script type="module" src="src/main.ts"></script>
+    <script type="module" src="src/speaker.ts"></script>
   </head>
-  <body>
-    <h1 class="text-3xl font-bold underline">speaker page</h1>
+  <body
+    class="flex flex-col items-center px-52 py-24 dark:bg-black dark:text-white"
+  >
+    <div
+      id="viewport"
+      class="max-w-6xl font-medium wrap-break-word text-4xl leading-13"
+    >
+      <div
+        id="block-container"
+        class="flex flex-col gap-6 transition-transform duration-200 ease-in-out"
+        style="transform: translateY(0)"
+      ></div>
+    </div>
+
+    <div class="hidden">
+      <div
+        id="template-block"
+        class="pl-5 border-l-4 border-l-white dark:border-l-black"
+      ></div>
+    </div>
   </body>
 </html>
