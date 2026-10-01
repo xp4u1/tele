@@ -76,4 +76,22 @@ window.addEventListener("keydown", (event) => {
   }
 
   focusBlock(currentBlock);
+  event.preventDefault();
 });
+
+window.addEventListener(
+  "wheel",
+  (event) => {
+    const blocks = document.querySelectorAll("[data-block-id]");
+
+    if (event.deltaY > 0) {
+      currentBlock = Math.min(currentBlock + 1, blocks.length - 1);
+    } else if (event.deltaY < 0) {
+      currentBlock = Math.max(currentBlock - 1, 0);
+    }
+
+    focusBlock(currentBlock);
+    event.preventDefault();
+  },
+  { passive: false },
+);
