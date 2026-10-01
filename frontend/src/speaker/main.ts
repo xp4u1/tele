@@ -1,6 +1,6 @@
 import { presentationState } from "../state";
 import type { Script } from "../types";
-import { setupKeyboard, setupWheel } from "./keyboard";
+import { setupKeyboard, setupMouse } from "./keyboard";
 import { renderBlocks, renderCurrentBlock } from "./rendering";
 
 presentationState.subscribe(renderCurrentBlock);
@@ -11,11 +11,11 @@ window.addEventListener("load", async () => {
     const script: Script = await response.json();
 
     renderBlocks(script);
-    presentationState.reset();
+    presentationState.init(script.blocks.length);
     renderCurrentBlock(presentationState.currentBlock);
 
-    setupKeyboard(() => document.querySelectorAll("[data-block-id]").length);
-    setupWheel(() => document.querySelectorAll("[data-block-id]").length);
+    setupKeyboard();
+    setupMouse();
   } catch (error) {
     console.error(error);
   }

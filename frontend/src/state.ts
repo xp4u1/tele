@@ -1,6 +1,7 @@
 type Listener = (currentIndex: number) => void;
 
 let currentIndex = 0;
+let maxIndex = 0;
 const listeners = new Set<Listener>();
 
 const notify = () => {
@@ -17,8 +18,8 @@ export const presentationState = {
     notify();
   },
 
-  next(totalBlockCount: number) {
-    currentIndex = Math.min(currentIndex + 1, totalBlockCount - 1);
+  next() {
+    currentIndex = Math.min(currentIndex + 1, maxIndex - 1);
     notify();
   },
 
@@ -30,6 +31,11 @@ export const presentationState = {
   reset() {
     currentIndex = 0;
     notify();
+  },
+
+  init(max: number) {
+    maxIndex = max;
+    this.reset();
   },
 
   subscribe(listener: Listener) {
