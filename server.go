@@ -4,7 +4,6 @@ import (
 	"context"
 	"embed"
 	"encoding/json"
-	"io/fs"
 	"log"
 	"net/http"
 
@@ -20,12 +19,6 @@ const hostAddress = "127.0.0.1:7700"
 func StartServer(script Script) {
 	e := echo.New()
 	hub := NewWSHub(PresentationPosition{BlockID: 0})
-
-	dist, err := fs.Sub(embeddedFrontend, "frontend/dist")
-	if err != nil {
-		log.Printf("Failed to load embedded files %v", err)
-	}
-	assetHandler := http.FileServer(http.FS(dist))
 
 	e.GET("/state.json", func(c *echo.Context) error {
 		return c.JSON(http.StatusOK, PresentationState{
@@ -61,7 +54,16 @@ func StartServer(script Script) {
 
 		return nil
 	})
-	e.GET("/*", echo.WrapHandler(assetHandler))
+	e.StaticFS("/", echo.MustSubFS(embeddedFrontend, "frontend/dist"))
+
+	pdfFile, ok := script.Metadata["pdf"].(string)
+	if ok && pdfFile != "" {
+		e.File("/slides.pdf", pdfFile)
+	} else {
+		e.GET("/slides.pdf", func(c *echo.Context) error {
+			return c.String(http.StatusFailedDependency, "No presentation file specified")
+		})
+	}
 
 	log.Printf("Starting server: http://%s", hostAddress)
 	sc := echo.StartConfig{Address: hostAddress, HideBanner: true, HidePort: true}
