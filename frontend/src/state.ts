@@ -29,14 +29,6 @@ export const presentationState = {
     return state.currentBlockId;
   },
 
-  get currentBlock() {
-    return state.script.blocks[state.currentBlockId];
-  },
-
-  get currentSlideId() {
-    return this.currentBlock?.slideId;
-  },
-
   get maxBlockId() {
     return Math.max(state.script.blocks.length - 1, 0);
   },
