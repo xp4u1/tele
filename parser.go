@@ -11,17 +11,6 @@ import (
 	"github.com/yuin/goldmark/v2/renderer/html"
 )
 
-type Script struct {
-	Block    []Block        `json:"blocks"`
-	Metadata map[string]any `json:"metadata"`
-}
-
-type Block struct {
-	BlockId int    `json:"blockId"`
-	SlideId int    `json:"slideId"`
-	HTML    string `json:"html"`
-}
-
 var p = parser.New(
 	parser.WithExtensions(
 		meta.Parser,

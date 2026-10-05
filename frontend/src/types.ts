@@ -8,3 +8,12 @@ export interface Block {
   slideId: number;
   html: string;
 }
+
+export interface PresentationState {
+  script: Script;
+  currentBlockId: number;
+}
+
+export interface PresentationPosition {
+  blockId: number;
+}

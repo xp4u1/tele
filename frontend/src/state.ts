@@ -1,41 +1,79 @@
-type Listener = (currentIndex: number) => void;
+import type { PresentationState, Script } from "./types";
 
-let currentIndex = 0;
-let maxIndex = 0;
-const listeners = new Set<Listener>();
+export type StateChangeSource = "local" | "remote";
 
-const notify = () => {
-  listeners.forEach((listener) => listener(currentIndex));
+export type Listener = (
+  state: PresentationState,
+  source: StateChangeSource,
+) => void;
+
+let state: PresentationState = {
+  script: {
+    blocks: [],
+    metadata: undefined,
+  },
+  currentBlockId: 0,
 };
 
+const listeners = new Set<Listener>();
+
+const notify = (source: StateChangeSource) => {
+  listeners.forEach((listener) => listener(state, source));
+};
+
+const clamp = (value: number, min: number, max: number) =>
+  Math.min(Math.max(value, min), max);
+
 export const presentationState = {
-  get currentBlock() {
-    return currentIndex;
+  get currentBlockId() {
+    return state.currentBlockId;
   },
 
-  goTo(index: number) {
-    currentIndex = index;
-    notify();
+  get currentBlock() {
+    return state.script.blocks[state.currentBlockId];
+  },
+
+  get currentSlideId() {
+    return this.currentBlock?.slideId;
+  },
+
+  get maxBlockId() {
+    return Math.max(state.script.blocks.length - 1, 0);
+  },
+
+  goTo(blockId: number) {
+    state.currentBlockId = clamp(blockId, 0, this.maxBlockId);
+    notify("local");
   },
 
   next() {
-    currentIndex = Math.min(currentIndex + 1, maxIndex - 1);
-    notify();
+    this.goTo(this.currentBlockId + 1);
   },
 
   previous() {
-    currentIndex = Math.max(currentIndex - 1, 0);
-    notify();
+    this.goTo(this.currentBlockId - 1);
   },
 
   reset() {
-    currentIndex = 0;
-    notify();
+    this.goTo(0);
   },
 
-  init(max: number) {
-    maxIndex = max;
-    this.reset();
+  applyRemote(blockId: number) {
+    state.currentBlockId = clamp(blockId, 0, this.maxBlockId);
+    notify("remote");
+  },
+
+  init(script: Script, currentBlockId = 0) {
+    state = {
+      script,
+      currentBlockId: clamp(
+        currentBlockId,
+        0,
+        Math.max(script.blocks.length - 1, 0),
+      ),
+    };
+
+    notify("local");
   },
 
   subscribe(listener: Listener) {

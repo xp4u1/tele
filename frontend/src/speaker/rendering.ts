@@ -1,5 +1,5 @@
-import { presentationState } from "../state";
-import type { Script } from "../types";
+import { presentationState, type StateChangeSource } from "../state";
+import type { PresentationState, Script } from "../types";
 
 const blockContainer = document.querySelector(
   "#block-container",
@@ -24,7 +24,11 @@ export const renderBlocks = (script: Script) => {
   });
 };
 
-export const renderCurrentBlock = (currentBlock: number) => {
+export const renderCurrentBlock = (
+  state: PresentationState,
+  _source: StateChangeSource,
+) => {
+  const currentBlock = state.currentBlockId;
   const blocks = document.querySelectorAll<HTMLElement>("[data-block-id]");
 
   blocks.forEach((element, index) => {

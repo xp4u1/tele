@@ -1,5 +1,6 @@
 import { presentationState } from "../state";
-import type { Script } from "../types";
+import type { PresentationState } from "../types";
+import { setupWebsocket } from "../websocket";
 import { setupKeyboard, setupMouse } from "./keyboard";
 import { renderBlocks, renderCurrentBlock } from "./rendering";
 
@@ -7,15 +8,16 @@ presentationState.subscribe(renderCurrentBlock);
 
 window.addEventListener("load", async () => {
   try {
-    const response = await fetch("/api/script");
-    const script: Script = await response.json();
+    const stateResponse = await fetch("/state.json");
+    const state: PresentationState = await stateResponse.json();
 
-    renderBlocks(script);
-    presentationState.init(script.blocks.length);
-    renderCurrentBlock(presentationState.currentBlock);
+    renderBlocks(state.script);
+    presentationState.init(state.script, state.currentBlockId);
 
     setupKeyboard();
     setupMouse();
+
+    setupWebsocket();
   } catch (error) {
     console.error(error);
   }
