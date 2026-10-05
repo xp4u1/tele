@@ -2,7 +2,7 @@ package main
 
 import (
 	"bytes"
-	"log"
+	"fmt"
 	"os"
 
 	meta "github.com/yuin/goldmark-meta/v2"
@@ -54,8 +54,8 @@ func ParseScript(path string) (*Script, error) {
 		}
 	}
 
-	log.Printf(
-		"Parsed script with %d slides (%d text blocks)",
+	fmt.Printf(
+		"Parsed script with %d slides (%d text blocks)\n",
 		slideIndex+1,
 		blockIndex,
 	)

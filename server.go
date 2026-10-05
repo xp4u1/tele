@@ -4,19 +4,20 @@ import (
 	"context"
 	"embed"
 	"encoding/json"
+	"fmt"
 	"log"
+	"net"
 	"net/http"
 
 	"github.com/labstack/echo/v5"
+	"github.com/pkg/browser"
 	"golang.org/x/net/websocket"
 )
 
 //go:embed frontend/dist
 var embeddedFrontend embed.FS
 
-const hostAddress = "127.0.0.1:7700"
-
-func StartServer(script Script) {
+func StartServer(config Config, script Script) {
 	e := echo.New()
 	hub := NewWSHub(PresentationPosition{BlockID: 0})
 
@@ -33,7 +34,10 @@ func StartServer(script Script) {
 			defer func() {
 				hub.Remove(ws)
 				ws.Close()
+				log.Println("Client disconnected")
 			}()
+
+			log.Println("Client connected")
 
 			for {
 				var raw string
@@ -56,18 +60,31 @@ func StartServer(script Script) {
 	})
 	e.StaticFS("/", echo.MustSubFS(embeddedFrontend, "frontend/dist"))
 
-	pdfFile, ok := script.Metadata["pdf"].(string)
-	if ok && pdfFile != "" {
-		e.File("/slides.pdf", pdfFile)
-	} else {
+	pdfPath, err := script.GetSlidesFile()
+	if err != nil {
 		e.GET("/slides.pdf", func(c *echo.Context) error {
 			return c.String(http.StatusFailedDependency, "No presentation file specified")
 		})
+	} else {
+		e.File("/slides.pdf", *pdfPath)
 	}
 
-	log.Printf("Starting server: http://%s", hostAddress)
-	sc := echo.StartConfig{Address: hostAddress, HideBanner: true, HidePort: true}
+	sc := echo.StartConfig{Address: config.Server.Address, HideBanner: true, HidePort: true, ListenerAddrFunc: func(addr net.Addr) {
+		baseURL := "http://" + addr.String()
+
+		fmt.Printf("\nSpeaker view: %s/speaker.html\n", baseURL)
+		if pdfPath != nil {
+			fmt.Printf("      Slides: %s/slides.html\n", baseURL)
+		}
+		fmt.Println("")
+
+		if config.Server.OpenBrowser {
+			browser.OpenURL(baseURL + "/speaker.html")
+			browser.OpenURL(baseURL + "/slides.html")
+		}
+	}}
+
 	if err := sc.Start(context.Background(), e); err != nil {
-		log.Printf("Failed to start server: %v", err)
+		fmt.Printf("Failed to start server: %v\n", err)
 	}
 }
