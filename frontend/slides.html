@@ -7,9 +7,12 @@
     <link rel="stylesheet" href="src/main.css" />
     <script type="module" src="src/slides/main.ts"></script>
   </head>
-  <body>
-    <h1 class="text-3xl">
-      Current slide: <span id="current-slide" class="font-bold">???</span>
-    </h1>
+  <body class="m-0 w-full h-full">
+    <div
+      id="slide-container"
+      class="w-screen h-screen flex items-center justify-center bg-white dark:bg-black"
+    >
+      <canvas id="slide" class="w-full h-full"></canvas>
+    </div>
   </body>
 </html>

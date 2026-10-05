@@ -1,20 +1,24 @@
 import { presentationState } from "../state";
 import type { PresentationState } from "../types";
 import { setupWebsocket } from "../websocket";
+import { createPdfPresentation } from "./pdf";
 
 window.addEventListener("load", async () => {
   try {
     const stateResponse = await fetch("/state.json");
     const state: PresentationState = await stateResponse.json();
 
-    const currentSlideSpan: HTMLElement =
-      document.querySelector("#current-slide")!;
+    const pdfPresentation = createPdfPresentation(
+      document.querySelector<HTMLCanvasElement>("#slide-container")!,
+      document.querySelector<HTMLCanvasElement>("#slide")!,
+    );
+    await pdfPresentation.load("/slides.pdf");
+
     presentationState.subscribe((state, _source) => {
       const block = state.script.blocks[state.currentBlockId];
-      const slideId = block?.slideId;
-
-      currentSlideSpan.innerText = slideId.toString();
+      pdfPresentation.goTo(block.slideId);
     });
+    window.addEventListener("resize", pdfPresentation.rerender);
 
     presentationState.init(state.script, state.currentBlockId);
     setupWebsocket();
