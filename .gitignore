@@ -26,3 +26,6 @@ tmp/
 
 # Test files
 *.pdf
+
+# goreleaser
+dist/
