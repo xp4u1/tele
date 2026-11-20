@@ -24,5 +24,12 @@ window.addEventListener("load", async () => {
     setupWebsocket();
   } catch (error) {
     console.error(error);
+
+    const message = document.createElement("p");
+    message.textContent = "No presentation available";
+    message.className = "text-lg text-neutral-500 text-center";
+    document
+      .querySelector<HTMLElement>("#slide-container")
+      ?.replaceChildren(message);
   }
 });
