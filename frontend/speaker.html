@@ -12,6 +12,32 @@
     class="flex flex-col items-center px-52 py-24 dark:bg-black dark:text-white"
   >
     <div
+      id="empty-markdown"
+      hidden
+      class="fixed inset-0 flex items-center justify-center p-6"
+    >
+      <div class="max-w-xl text-left text-lg">
+        <h1 class="mb-2 text-2xl font-semibold">The markdown file is empty</h1>
+        <p class="mb-4">Add your slides to the markdown file, for example:</p>
+        <pre
+          class="overflow-x-auto rounded-lg bg-neutral-100 p-4 text-neutral-900 dark:bg-neutral-900 dark:text-neutral-100"
+        ><code>---
+pdf: your_presentation.pdf
+---
+
+# Headings are not shown
+
+Only paragraphs are shown, one step each.
+
+A line with --- on its own starts a new slide.
+
+---
+
+This paragraph is on slide 2.</code></pre>
+      </div>
+    </div>
+
+    <div
       id="viewport"
       class="max-w-6xl font-medium wrap-break-word text-4xl leading-13"
     >
